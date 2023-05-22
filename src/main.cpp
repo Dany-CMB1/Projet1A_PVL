@@ -1,5 +1,12 @@
 #include <Arduino.h>
 #define NB_BO 2
+#include <SoftwareSerial.h>
+
+//Déclaration pins module BT
+#define statePin 2
+#define rxPin 3 //Pin Rx du HC05 --> Pin 3 de l'Arduino
+#define txPin 4//Pin Tx du HC05 --> Pin 4 de l'Arduino
+#define keyPin 5
 
 //Déclaration des pins sur lesquels les capteurs sont branchés
 int GLED = 4;
@@ -14,6 +21,8 @@ bool chrono = 0;
 int nb_fd[NB_BO], nb_fm[NB_BO];
 int seuil = 0, pot = 0;
 double tps, start;
+
+SoftwareSerial hc05(txPin, rxPin); //Tx | Rx pdv HC05
 
 void setup()
 {
@@ -49,7 +58,7 @@ void loop()
   if (chrono) {tps=(millis()-start)/(double)1000; Serial.println(tps); }
 
   //Détection du 1er front montant de la BO de départ; démarrage du chrono
-  else if (nb_fm[0]==1 && !chrono) {chrono = 1; start=millis(); digitalWrite(GLED, HIGH);}
+  else if (hc05.available() && !chrono) {chrono = 1; start=millis(); digitalWrite(GLED, HIGH);}
 
   //Détection du 1er front descendant de la BO d'arrivée; arrêt du chrono, affichage continu du temps final
   if (nb_fd[NB_BO-1]==1 && chrono) {chrono = 0; digitalWrite(GLED, LOW);}
@@ -73,3 +82,9 @@ void GetSensorStatus()
     else {currStatus[i]=0; }
   }
 }
+
+void tempSync()
+ {
+  while (hc05.available()){
+     time = hc05.readBytesUntil("f");
+ }
