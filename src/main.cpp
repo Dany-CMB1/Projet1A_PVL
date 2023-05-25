@@ -95,10 +95,15 @@ void loop()
   else if (hc05.available() && hc05.read()==2 && !chrono) {chrono = 1; start = time_offset + millis(); digitalWrite(GLED, HIGH);}
 
   //Détection du 1er front descendant de la BO d'arrivée; arrêt du chrono, affichage continu du temps final
-  if (nb_fd==1 && chrono) {chrono = 0; digitalWrite(GLED, LOW); digitalWrite(pwmPin,0);}
+  if (nb_fd==1 && chrono) {chrono = 0; digitalWrite(GLED, LOW); digitalWrite(pwmPin,0); LCDprintTime();}
 
 }
 
+void LCDprintTime()
+{
+  lcd.setCursor(0,0);
+  lcd.print(tps);
+}
 
 void GetSensorStatus()
 {
