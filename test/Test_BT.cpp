@@ -30,11 +30,12 @@ void setup()
 
   lcd.init(); // initialize the lcd
   lcd.backlight();
-  lcd.clear();                 // clear display
+  lcd.clear();// clear display
 }
 
 void loop()
 {
+  //Affichage des données sur le LCD
  if (hc05.available())  {lcd.setCursor(0, 0);  lcd.println(hc05.read());}
 }
 
