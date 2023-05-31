@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <LiquidCrystal_I2C.h>
 
 //Définition des pins
 #define statePin 2
@@ -12,9 +13,9 @@
 #define nanoBR 9600
 
 bool attente=true;
-String choice;
 int incomingByte;
 
+LiquidCrystal_I2C lcd(0x27, 16, 2); // I2C address 0x27, 16 column and 2 rows
 SoftwareSerial hc05(txPin, rxPin); //Tx | Rx pdv HC05
 
 void setup()
@@ -22,22 +23,18 @@ void setup()
   Serial.begin(nanoBR);
   pinMode(keyPin, OUTPUT);
 
-  //Choix du mode de fonctionnement
-  while (attente)
-  {
-    Serial.print("Choose mode (at/data): ");
-    while (Serial.available() ==0) {} //Boucle d'attente d'une entrée sur le moniteur série
-    choice = Serial.readString(); choice.trim(); Serial.println(choice);
-    if (choice=="at") {digitalWrite(keyPin, HIGH); Serial.println("Enter AT commands:"); attente=false;}
-    else if (choice=="data") {digitalWrite(keyPin, LOW); attente=false;}
-  }
+  //Mode échange de données
+  digitalWrite(keyPin, LOW); attente=false;
 
   hc05.begin(hc05BR);
+
+  lcd.init(); // initialize the lcd
+  lcd.backlight();
+  lcd.clear();                 // clear display
 }
 
 void loop()
 {
- if (hc05.available()) Serial.write(hc05.read());
- if (Serial.available()) {incomingByte=Serial.read(); Serial.write(incomingByte); hc05.write(incomingByte);}
+ if (hc05.available())  {lcd.setCursor(0, 0);  lcd.println(hc05.read());}
 }
 

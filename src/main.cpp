@@ -127,6 +127,6 @@ void calibratePot()
  {
   pot = 1023 - analogRead(Pot);
   seuil = map(pot, 0, 1023, 0, 1000);
-  //String seuilStr = String(seuil);
-  //hc05.println(seuilStr);
+  String seuilStr = String(seuil);
+  hc05.println(seuilStr);
  }
